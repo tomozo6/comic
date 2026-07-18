@@ -1,0 +1,21 @@
+# v1 ワイヤーフレーム
+
+スマートフォンを基準に、次の導線を確認するためのワイヤーフレームです。
+
+```text
+ログイン → 作品一覧 → 巻一覧 → 漫画リーダー
+```
+
+[ワイヤーフレームを開く](./design/wireframes/v1.html)
+
+<iframe
+  src="./design/wireframes/v1.html"
+  title="漫画サイト v1 ワイヤーフレーム"
+  style="width: 100%; height: 760px; border: 1px solid #ddd; border-radius: 8px;"
+></iframe>
+
+## 更新時の確認事項
+
+- 作品を選ぶと巻一覧へ進むこと。
+- 巻を選ぶと、話一覧を挟まずリーダーへ進むこと。
+- 狭い画面で横スクロールを必要としないこと。

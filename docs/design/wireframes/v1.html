@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>漫画サイト v1 ワイヤーフレーム</title>
+    <style>
+      :root { color: #171717; font-family: system-ui, sans-serif; background: #e8e8e8; }
+      * { box-sizing: border-box; }
+      body { margin: 0; padding: 24px 12px; }
+      h1, .note { text-align: center; } h1 { font-size: 20px; margin: 0 0 6px; } .note { margin: 0 0 22px; color: #555; font-size: 13px; }
+      main { display: grid; grid-template-columns: repeat(4, 290px); justify-content: center; gap: 18px; }
+      section { min-height: 610px; overflow: hidden; border: 3px solid #222; border-radius: 22px; background: #fff; }
+      header { padding: 11px 14px; border-bottom: 2px solid #222; background: #f4f4f4; font-weight: 700; }
+      .content { padding: 16px; } .center { min-height: 530px; display: grid; align-content: center; gap: 18px; text-align: center; }
+      .logo { font-size: 26px; font-weight: 800; } .muted { color: #666; font-size: 13px; }
+      button { width: 100%; padding: 12px; border: 2px solid #222; background: #222; color: white; font: inherit; font-weight: 700; }
+      .title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; } .title h2 { margin: 0; font-size: 19px; }
+      .avatar { width: 27px; height: 27px; border: 2px solid #222; border-radius: 50%; }
+      .works { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 10px; }
+      .cover { display: grid; aspect-ratio: 2 / 3; place-items: center; border: 2px solid #222; background: #eee; font-weight: 700; }
+      .works p { margin: 6px 0 1px; font-size: 13px; font-weight: 700; } .works small { color: #666; }
+      a { color: inherit; text-decoration: none; } .back { font-size: 13px; }
+      .hero { display: grid; grid-template-columns: 92px 1fr; gap: 12px; margin: 14px 0 20px; } .hero h2 { margin: 4px 0; font-size: 19px; }
+      .vol { display: grid; grid-template-columns: 48px 1fr auto; gap: 10px; align-items: center; padding: 9px 0; border-top: 1px solid #aaa; }
+      .mini { display: grid; height: 63px; place-items: center; border: 2px solid #222; font-size: 11px; } .vol span { display: block; color: #666; font-size: 12px; margin-top: 3px; }
+      .reader { background: #333; color: #fff; } .reader header { border-color: #777; background: #222; display: flex; justify-content: space-between; }
+      .page { position: relative; width: 230px; aspect-ratio: 2 / 3; margin: 25px auto; border: 2px solid #111; background: #fff; }
+      .panel { position: absolute; border: 2px solid #222; background: #eee; } .panel:nth-child(1) { inset: 12px 12px 48% 12px; } .panel:nth-child(2) { inset: 57% 49% 12px 12px; } .panel:nth-child(3) { inset: 57% 12px 12px 58%; }
+      .page-count { text-align: center; font-size: 13px; }
+      @media (max-width: 1260px) { main { grid-template-columns: repeat(2, 290px); } } @media (max-width: 640px) { main { grid-template-columns: 290px; } }
+    </style>
+  </head>
+  <body>
+    <h1>漫画サイト v1 — ワイヤーフレーム</h1>
+    <p class="note">ログイン → 作品一覧 → 巻一覧 → 漫画リーダー</p>
+    <main>
+      <section><header>1. ログイン</header><div class="content center"><div class="logo">わが家の漫画</div><div class="muted">家族のための漫画棚</div><button>Google でログイン</button></div></section>
+      <section><header>2. 作品一覧</header><div class="content"><div class="title"><h2>作品一覧</h2><i class="avatar"></i></div><div class="works"><a href="#volumes"><div class="cover">表紙</div><p>宇宙ねこ</p><small>とみぞう</small></a><a href="#volumes"><div class="cover">表紙</div><p>森の探検隊</p><small>家族制作</small></a><a href="#volumes"><div class="cover">表紙</div><p>おばけ日和</p><small>とみぞう</small></a><a href="#volumes"><div class="cover">表紙</div><p>未来のアルバム</p><small>家族制作</small></a></div></div></section>
+      <section id="volumes"><header>3. 巻一覧</header><div class="content"><a class="back" href="#">← 作品一覧</a><div class="hero"><div class="cover">表紙</div><div><h2>宇宙ねこ</h2><span class="muted">とみぞう</span></div></div><h3>巻を選ぶ</h3><a class="vol" href="#reader"><div class="mini">1巻</div><div><strong>第1巻</strong><span>はじまりの星</span></div><b>›</b></a><a class="vol" href="#reader"><div class="mini">2巻</div><div><strong>第2巻</strong><span>月へ行こう</span></div><b>›</b></a><a class="vol" href="#reader"><div class="mini">3巻</div><div><strong>第3巻</strong><span>帰り道の秘密</span></div><b>›</b></a></div></section>
+      <section class="reader" id="reader"><header><a href="#volumes">← 巻一覧</a><span>宇宙ねこ 第1巻</span></header><div class="page"><i class="panel"></i><i class="panel"></i><i class="panel"></i></div><p class="page-count">1 / 24<br />縦にスクロールして読む</p></section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="家族のための漫画棚" />
+    <title>わが家の漫画</title>
+    <style>
+      :root {
+        color: #171717;
+        background: #f7f6f2;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+
+      main {
+        width: min(100%, 440px);
+        padding: 48px 32px 32px;
+        text-align: center;
+        background: #fff;
+        border: 1px solid #e4e1d8;
+        border-radius: 20px;
+        box-shadow: 0 16px 40px rgb(52 47 35 / 10%);
+      }
+
+      .mark {
+        display: grid;
+        width: 64px;
+        aspect-ratio: 1;
+        margin: 0 auto 24px;
+        place-items: center;
+        color: #fff;
+        background: #252525;
+        border-radius: 18px;
+        font-size: 28px;
+        font-weight: 800;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(26px, 7vw, 32px);
+        letter-spacing: 0.04em;
+      }
+
+      .lead {
+        margin: 12px 0 32px;
+        color: #68645c;
+        font-size: 15px;
+      }
+
+      button {
+        display: inline-flex;
+        width: 100%;
+        min-height: 52px;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        border: 1px solid #cfcac0;
+        border-radius: 10px;
+        color: #242424;
+        background: #fff;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      button:hover:not(:disabled) { background: #f8f7f4; }
+      button:focus-visible { outline: 3px solid #5b8def; outline-offset: 3px; }
+      button:disabled { cursor: wait; opacity: 0.65; }
+
+      .actions {
+        display: grid;
+        gap: 12px;
+      }
+
+      .google-mark {
+        display: grid;
+        width: 20px;
+        aspect-ratio: 1;
+        place-items: center;
+        border-radius: 50%;
+        color: #fff;
+        background: conic-gradient(from -45deg, #4285f4 0 25%, #34a853 0 50%, #fbbc05 0 75%, #ea4335 0);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      #status {
+        min-height: 24px;
+        margin: 20px 0 0;
+        color: #68645c;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      #status[data-state="error"] { color: #b42318; }
+      #status[data-state="success"] { color: #137333; }
+
+      .notice {
+        margin: 32px 0 0;
+        color: #858078;
+        font-size: 12px;
+        line-height: 1.7;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="mark" aria-hidden="true">本</div>
+      <h1>わが家の漫画</h1>
+      <p class="lead">家族のための漫画棚</p>
+
+      <div class="actions">
+        <button id="login" type="button">
+          <span class="google-mark" aria-hidden="true">G</span>
+          Google でログイン
+        </button>
+        <button id="logout" type="button" hidden>ログアウト</button>
+      </div>
+      <p id="status" aria-live="polite">ログインして、漫画を読み始めましょう。</p>
+      <p class="notice">Google アカウントでログインしてご利用ください。</p>
+    </main>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+      import {
+        getAuth,
+        GoogleAuthProvider,
+        onAuthStateChanged,
+        signInWithPopup,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyCk4yaphRmQyDILB7ab_aCqS0q2fZv1y8A",
+        authDomain: "comic-stg.firebaseapp.com",
+        projectId: "comic-stg",
+        appId: "1:695648038080:web:14d5b47a6262d560e4d125",
+        messagingSenderId: "695648038080",
+        storageBucket: "comic-stg.firebasestorage.app",
+      };
+
+      const loginButton = document.querySelector("#login");
+      const logoutButton = document.querySelector("#logout");
+      const status = document.querySelector("#status");
+      const auth = getAuth(initializeApp(firebaseConfig));
+      const provider = new GoogleAuthProvider();
+
+      provider.setCustomParameters({ prompt: "select_account" });
+
+      function setStatus(message, state = "") {
+        status.textContent = message;
+        status.dataset.state = state;
+      }
+
+      loginButton.addEventListener("click", async () => {
+        loginButton.disabled = true;
+        setStatus("Google のログイン画面を開いています。");
+
+        try {
+          await signInWithPopup(auth, provider);
+        } catch (error) {
+          if (error.code === "auth/popup-closed-by-user") {
+            setStatus("ログインをキャンセルしました。", "error");
+          } else {
+            setStatus("ログインに失敗しました。時間をおいて、もう一度お試しください。", "error");
+          }
+          loginButton.disabled = false;
+        }
+      });
+
+      logoutButton.addEventListener("click", async () => {
+        logoutButton.disabled = true;
+        setStatus("ログアウトしています。");
+
+        try {
+          await signOut(auth);
+        } catch (error) {
+          setStatus("ログアウトに失敗しました。もう一度お試しください。", "error");
+          logoutButton.disabled = false;
+        }
+      });
+
+      onAuthStateChanged(auth, (user) => {
+        if (!user) {
+          loginButton.hidden = false;
+          loginButton.disabled = false;
+          logoutButton.hidden = true;
+          logoutButton.disabled = false;
+          setStatus("ログインして、漫画を読み始めましょう。");
+          return;
+        }
+
+        loginButton.hidden = true;
+        loginButton.disabled = true;
+        logoutButton.hidden = false;
+        logoutButton.disabled = false;
+        setStatus(`${user.displayName || "ログイン"}さん、ログインしました。`, "success");
+      });
+    </script>
+  </body>
+</html>
