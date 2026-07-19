@@ -22,7 +22,7 @@ import (
 
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/auth"
-	"github.com/tomozo6/comic/application/internal/catalog"
+	"github.com/tomozo6/manga/application/internal/catalog"
 )
 
 //go:embed media/*
@@ -316,7 +316,7 @@ func openCatalogForServer(ctx context.Context) (*sql.DB, func(), error) {
 	if source == "" {
 		source = "catalog/mangas"
 	}
-	file, err := os.CreateTemp("", "comic-catalog-*.db")
+	file, err := os.CreateTemp("", "manga-catalog-*.db")
 	if err != nil {
 		return nil, nil, err
 	}

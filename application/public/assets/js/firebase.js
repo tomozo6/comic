@@ -9,8 +9,8 @@ import {
 
 // const firebaseConfig = {
 //   apiKey: "AIzaSyCk4yaphRmQyDILB7ab_aCqS0q2fZv1y8A",
-//   authDomain: "comic-stg.firebaseapp.com",
-//   projectId: "comic-stg",
+//   authDomain: "manga-stg.firebaseapp.com",
+//   projectId: "manga-stg",
 //   appId: "1:695648038080:web:14d5b47a6262d560e4d125",
 // };
 

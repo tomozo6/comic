@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tomozo6/comic/application/internal/catalog"
+	"github.com/tomozo6/manga/application/internal/catalog"
 )
 
 type testVerifier struct{}
@@ -49,8 +49,8 @@ func TestMangaListUsesFrontendJSONKeys(t *testing.T) {
 	if err := json.NewDecoder(res.Body).Decode(&works); err != nil {
 		t.Fatalf("decode response: %v", err)
 	}
-	if len(works) == 0 || works[0].ID != "demo-comic" {
-		t.Fatalf("works = %#v, want first id demo-comic", works)
+	if len(works) == 0 || works[0].ID != "demo-manga" {
+		t.Fatalf("works = %#v, want first id demo-manga", works)
 	}
 }
 
@@ -65,8 +65,8 @@ func TestVolumePagesAreGeneratedFromCatalogMetadata(t *testing.T) {
 	}
 	defer db.Close()
 	a := app{verifier: testVerifier{}, allowed: map[string]struct{}{"family@example.com": {}}, signer: newLocalMediaSigner([]byte("test-secret"), time.Minute), db: db}
-	req := httptest.NewRequest(http.MethodGet, "/api/manga/demo-comic/volumes/volume-1", nil)
-	req.SetPathValue("mangaID", "demo-comic")
+	req := httptest.NewRequest(http.MethodGet, "/api/manga/demo-manga/volumes/volume-1", nil)
+	req.SetPathValue("mangaID", "demo-manga")
 	req.SetPathValue("volumeID", "volume-1")
 	req.Header.Set("Authorization", "Bearer test-token")
 	res := httptest.NewRecorder()

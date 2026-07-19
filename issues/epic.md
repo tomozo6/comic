@@ -94,5 +94,5 @@
   - 画像配信は短命 GCS 署名付きURL。
   - カタログのオンライン更新は行わない。カタログ変更はイメージの再ビルドと Cloud Run の新リビジョンのデプロイで反映する。
   - SQLite はコンテナに同梱する読み取り専用データであり、Cloud Run のローカルディスクを永続ストレージとして扱わない。
-  - 独自ドメイン stg-comic.tomozo6.com は将来的に Cloud Run に向ける。
+  - 独自ドメイン stg-manga.tomozo6.com は将来的に Cloud Run に向ける。
   - 高トラフィック化したら、HTML 配信を Firebase Hosting/Cloud CDN に分離し、画像配信も Cloud CDN 署名URLへ移行する。

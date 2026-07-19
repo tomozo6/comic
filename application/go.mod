@@ -1,4 +1,4 @@
-module github.com/tomozo6/comic/application
+module github.com/tomozo6/manga/application
 
 go 1.23.0
 

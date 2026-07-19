@@ -9,10 +9,10 @@
 画像キーに使う不変の識別子です。`number` は画面に表示する巻番号で、変更しても構いません。
 
 ```yaml
-id: demo-comic
+id: demo-manga
 title: ふしぎな青い本
 author_name: 開発用サンプル
-cover_object_key: manga/demo-comic/cover.webp # 任意
+cover_object_key: manga/demo-manga/cover.webp # 任意
 volumes:
   - id: volume-1
     number: 1
@@ -30,7 +30,7 @@ volumes:
 manga/{manga_id}/{volume_id}/{page:03d}.{page_extension}
 ```
 
-たとえば上記の1ページ目は `manga/demo-comic/volume-1/001.webp` です。同一巻内の画像は
+たとえば上記の1ページ目は `manga/demo-manga/volume-1/001.webp` です。同一巻内の画像は
 同じ拡張子にそろえます。
 
 ## ローカル開発

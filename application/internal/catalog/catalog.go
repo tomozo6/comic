@@ -1,4 +1,4 @@
-// Package catalog builds and opens the read-only comic catalog database.
+// Package catalog builds and opens the read-only manga catalog database.
 package catalog
 
 import (

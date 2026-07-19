@@ -5,7 +5,7 @@ import (
 	"flag"
 	"log"
 
-	"github.com/tomozo6/comic/application/internal/catalog"
+	"github.com/tomozo6/manga/application/internal/catalog"
 )
 
 func main() {
