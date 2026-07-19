@@ -1,4 +1,4 @@
-- [ホーム](/)
+- [ホーム](README.md)
 
 - プロダクト
   - [ユーザーフロー](product/user-flow.md)
@@ -12,6 +12,7 @@
 
 - 運用
   - [漫画カタログの管理](operations/catalog.md)
+  - [開発ドキュメントの運用](operations/documentation.md)
 
 - 設計記録
   - [ADR 0001: ローカル画像配信](adr/0001-local-media-url.md)
@@ -22,4 +23,5 @@
   - [ADR 0006: 複数ページ構成](adr/0006-multi-page-navigation.md)
   - [ADR 0007: SQLite カタログスキーマ](adr/0007-sqlite-catalog-schema.md)
   - [ADR 0008: フロントエンド資産の整理](adr/0008-static-frontend-organization.md)
+  - [ADR 0009: Docsifyによる開発ドキュメント](adr/0009-docsify-development-documentation.md)
   - [用語集](glossary.md)
