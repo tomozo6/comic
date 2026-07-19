@@ -7,12 +7,22 @@ import {
   signOut,
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
+// const firebaseConfig = {
+//   apiKey: "AIzaSyCk4yaphRmQyDILB7ab_aCqS0q2fZv1y8A",
+//   authDomain: "comic-stg.firebaseapp.com",
+//   projectId: "comic-stg",
+//   appId: "1:695648038080:web:14d5b47a6262d560e4d125",
+// };
+
 const firebaseConfig = {
-  apiKey: "AIzaSyCk4yaphRmQyDILB7ab_aCqS0q2fZv1y8A",
-  authDomain: "comic-stg.firebaseapp.com",
-  projectId: "comic-stg",
-  appId: "1:695648038080:web:14d5b47a6262d560e4d125",
+  apiKey: "AIzaSyAfy-qizJ10IVaDgKnzVEDUtgo7_nYnGLE",
+  authDomain: "tomozo6.firebaseapp.com",
+  projectId: "tomozo6",
+  appId: "1:673020427466:web:c00b4ca05a124202430833",
 };
+
+
+
 
 const auth = getAuth(initializeApp(firebaseConfig));
 const googleProvider = new GoogleAuthProvider();

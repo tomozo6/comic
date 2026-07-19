@@ -18,6 +18,7 @@
 - [ADR 0006](adr/0006-multi-page-navigation.md) — URL を持つ画面遷移
 - [ADR 0008](adr/0008-static-frontend-organization.md) — 実行用画面と設計資料の分離
 - [ADR 0009](adr/0009-docsify-development-documentation.md) — Docsifyによる設計書の公開方針
+- [ADR 0010](adr/0010-private-gcs-manga-images.md) — 実際の漫画画像の保管方針
 - [用語集](glossary.md) — 設計で使う用語
 
 ## 文書の扱い

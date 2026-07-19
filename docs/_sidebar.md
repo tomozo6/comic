@@ -24,4 +24,5 @@
   - [ADR 0007: SQLite カタログスキーマ](adr/0007-sqlite-catalog-schema.md)
   - [ADR 0008: フロントエンド資産の整理](adr/0008-static-frontend-organization.md)
   - [ADR 0009: Docsifyによる開発ドキュメント](adr/0009-docsify-development-documentation.md)
+  - [ADR 0010: 非公開GCS漫画画像](adr/0010-private-gcs-manga-images.md)
   - [用語集](glossary.md)

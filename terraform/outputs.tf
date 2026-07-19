@@ -11,3 +11,8 @@ output "firebase_web_config" {
     storageBucket     = data.google_firebase_web_app_config.manga.storage_bucket
   }
 }
+
+output "manga_images_bucket_name" {
+  description = "Private GCS bucket that stores production manga image objects."
+  value       = google_storage_bucket.manga_images.name
+}
