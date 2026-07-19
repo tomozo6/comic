@@ -6,10 +6,10 @@
 ログイン → 作品一覧 → 巻一覧 → 漫画リーダー
 ```
 
-[ワイヤーフレームを開く](./design/wireframes/v1.html)
+[ワイヤーフレームを開く](v1.html)
 
 <iframe
-  src="./design/wireframes/v1.html"
+  src="v1.html"
   title="漫画サイト v1 ワイヤーフレーム"
   style="width: 100%; height: 760px; border: 1px solid #ddd; border-radius: 8px;"
 ></iframe>

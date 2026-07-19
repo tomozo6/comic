@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/assets/css/site.css" />
+    <title>漫画リーダー</title>
+  </head>
+  <body>
+    <header class="top">
+      <a class="brand" href="/library">わが家の漫画</a>
+      <button id="logout" class="account" type="button">ログアウト</button>
+    </header>
+    <main>
+      <div class="reader-head">
+        <a id="back" class="back">← 巻一覧</a>
+        <h2 id="title"></h2>
+      </div>
+      <div id="pages"></div>
+      <p id="status" class="status center" aria-live="polite"></p>
+    </main>
+    <script type="module" src="/assets/js/pages/reader.js"></script>
+  </body>
+</html>

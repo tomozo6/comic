@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 1080" role="img" aria-label="猫と星の冒険の始まり">
+  <rect width="720" height="1080" fill="#fffdf8"/><rect x="34" y="34" width="652" height="1012" rx="10" fill="#d6efe2" stroke="#202020" stroke-width="8"/>
+  <rect x="62" y="62" width="596" height="600" fill="#a9d7ef" stroke="#202020" stroke-width="7"/><path d="M62 520 Q180 410 310 530T658 480V662H62Z" fill="#78b778"/>
+  <circle cx="256" cy="438" r="72" fill="#f2a875" stroke="#202020" stroke-width="7"/><path d="M185 420 Q255 315 329 420" fill="#353244" stroke="#202020" stroke-width="7"/><circle cx="232" cy="455" r="8"/><circle cx="279" cy="455" r="8"/>
+  <path d="M445 420l34-64 34 64q28 16 25 55c-4 52-47 79-93 79s-89-27-93-79q-3-39 25-55l34-64z" fill="#fff" stroke="#202020" stroke-width="7"/><circle cx="420" cy="462" r="8"/><circle cx="470" cy="462" r="8"/><path d="M438 490h15l-8 8z" fill="#e78383" stroke="#202020" stroke-width="4"/>
+  <path d="M85 735h550v185H85z" fill="#fff" stroke="#202020" stroke-width="7"/><text x="116" y="810" font-family="sans-serif" font-size="39" font-weight="bold" fill="#202020">「いっしょに行こう！」</text><text x="116" y="868" font-family="sans-serif" font-size="34" fill="#202020">冒険のはじまり。</text><text x="610" y="1000" text-anchor="end" font-family="sans-serif" font-size="28" fill="#202020">3</text>
+</svg>

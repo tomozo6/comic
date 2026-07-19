@@ -1,0 +1,186 @@
+:root {
+  color: #17212b;
+  background: #f3f7f8;
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 62px;
+  padding: 12px 18px;
+  color: #fff;
+  background: #315e8d;
+}
+
+.brand {
+  color: #fff;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.account {
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 99px;
+  color: #174c42;
+  background: #e9fff4;
+  font-size: 12px;
+}
+
+main {
+  width: min(100%, 520px);
+  margin: auto;
+  padding: 20px 16px 40px;
+}
+
+.hero {
+  padding: 24px 8px 18px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 27px;
+}
+
+h2 {
+  font-size: 18px;
+}
+
+.lead,
+.status {
+  color: #557080;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.card {
+  padding: 22px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 7px 24px #315e8d1a;
+}
+
+.center {
+  text-align: center;
+}
+
+.book,
+.cover {
+  display: grid;
+  place-items: center;
+  color: #fff;
+}
+
+.book {
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 15px;
+  border-radius: 15px;
+  background: #e17755;
+  font-size: 29px;
+}
+
+.primary,
+.volume,
+.manga {
+  width: 100%;
+  border: 0;
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary,
+.volume {
+  min-height: 50px;
+  color: #fff;
+  background: #315e8d;
+}
+
+.manga {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 16px;
+  padding: 12px;
+  color: inherit;
+  background: #fff;
+  box-shadow: 0 4px 17px #315e8d17;
+  text-align: left;
+  text-decoration: none;
+}
+
+.cover {
+  aspect-ratio: 2 / 3;
+  border-radius: 10px;
+  background: linear-gradient(150deg, #315e8d, #5baab1 54%, #f1bd62 55%);
+  font-size: 30px;
+}
+
+.manga h2 {
+  margin: 8px 0 6px;
+}
+
+.manga p {
+  margin: 0;
+  color: #557080;
+  font-size: 13px;
+}
+
+.volume {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px 0;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.volume small {
+  opacity: 0.82;
+}
+
+.back {
+  padding: 0;
+  border: 0;
+  color: #315e8d;
+  background: transparent;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.reader-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.page {
+  display: block;
+  width: 100%;
+  margin: 0 auto 16px;
+  background: #fff;
+  box-shadow: 0 3px 14px #17212b33;
+}
+
+.error {
+  color: #b32727;
+}
+
+@media (min-width: 521px) {
+  body {
+    background: #dfe9ed;
+  }
+}

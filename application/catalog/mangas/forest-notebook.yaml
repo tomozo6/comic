@@ -1,0 +1,19 @@
+id: forest-notebook
+title: 森の観察ノート
+author_name: 開発用サンプル
+volumes:
+  - id: volume-1
+    number: 1
+    title: はじめての探検
+    page_count: 3
+    page_extension: svg
+  - id: volume-2
+    number: 2
+    title: ひみつの木の実
+    page_count: 3
+    page_extension: svg
+  - id: volume-3
+    number: 3
+    title: 夕暮れの地図
+    page_count: 3
+    page_extension: svg

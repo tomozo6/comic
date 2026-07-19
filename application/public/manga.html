@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/assets/css/site.css" />
+    <title>巻一覧</title>
+  </head>
+  <body>
+    <header class="top">
+      <a class="brand" href="/library">わが家の漫画</a>
+      <button id="logout" class="account" type="button">ログアウト</button>
+    </header>
+    <main>
+      <a class="back" href="/library">← 作品一覧</a>
+      <section class="hero">
+        <h1 id="title"></h1>
+        <p id="author" class="lead"></p>
+      </section>
+      <h2>巻を選ぶ</h2>
+      <div id="list"></div>
+      <p id="status" class="status" aria-live="polite"></p>
+    </main>
+    <script type="module" src="/assets/js/pages/manga.js"></script>
+  </body>
+</html>
