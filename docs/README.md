@@ -9,6 +9,7 @@
 - [v1 アーキテクチャ](architecture/v1.md) — 技術構成と前提
 - [フロントエンド構成](architecture/frontend.md) — 静的画面とJavaScriptの保守方針
 - [漫画カタログの管理](operations/catalog.md) — YAML と SQLite の編集・生成手順
+- [GCS 漫画画像の運用](operations/gcs-images.md) — バケット内の画像キー構成と投入手順
 - [開発ドキュメントの運用](operations/documentation.md) — Docsifyと文書構成の保守手順
 - [ADR 0001](adr/0001-local-media-url.md) — ローカルでの画像配信方針
 - [ADR 0002](adr/0002-email-allowlist-authorization.md) — 家族限定の認可方針

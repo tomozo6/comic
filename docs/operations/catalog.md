@@ -33,6 +33,9 @@ manga/{manga_id}/{volume_id}/{page:03d}.{page_extension}
 たとえば上記の1ページ目は `manga/demo-manga/volume-1/001.webp` です。同一巻内の画像は
 同じ拡張子にそろえます。
 
+GCS バケット内での配置、投入方法、確認手順は
+[GCS 漫画画像の運用](gcs-images.md) を参照します。
+
 ## ローカル開発
 
 通常どおりアプリケーションを起動します。

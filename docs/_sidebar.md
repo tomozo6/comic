@@ -12,6 +12,7 @@
 
 - 運用
   - [漫画カタログの管理](operations/catalog.md)
+  - [GCS 漫画画像の運用](operations/gcs-images.md)
   - [開発ドキュメントの運用](operations/documentation.md)
 
 - 設計記録
