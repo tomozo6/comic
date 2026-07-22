@@ -199,6 +199,10 @@ h2 {
   content: none;
 }
 
+.page-placeholder.is-loaded {
+  min-height: 0;
+}
+
 .error {
   color: #b32727;
 }
