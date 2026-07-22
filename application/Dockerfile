@@ -1,7 +1,7 @@
 # ==========================================
 # 1. ビルド用のステージ (Build Stage)
 # ==========================================
-FROM golang:1.23-alpine AS builder
+FROM golang:1.26.4-alpine AS builder
 
 # ワークディレクトリの設定
 WORKDIR /app

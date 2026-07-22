@@ -73,7 +73,6 @@ terraform apply -var='local_media_signer_member=user:your-account@example.com'
 gcloud auth application-default login
 gcloud auth application-default set-quota-project tomozo6
 cd application
-set -a; source .env; set +a
 go run .
 ```
 

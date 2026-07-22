@@ -41,7 +41,6 @@ GCS バケット内での配置、投入方法、確認手順は
 
 ```sh
 cd application
-set -a; source .env; set +a
 go run .
 ```
 

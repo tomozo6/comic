@@ -19,6 +19,7 @@ import (
 	"cloud.google.com/go/storage"
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/auth"
+	"github.com/joho/godotenv"
 	"github.com/tomozo6/manga/application/internal/catalog"
 	"google.golang.org/api/iamcredentials/v1"
 )
@@ -378,6 +379,10 @@ func openCatalogForServer(ctx context.Context) (*sql.DB, func(), error) {
 }
 
 func main() {
+	if err := godotenv.Load(); err != nil && !errors.Is(err, os.ErrNotExist) {
+		log.Fatalf("load .env: %v", err)
+	}
+
 	projectID := os.Getenv("FIREBASE_PROJECT_ID")
 	allowedEmails := os.Getenv("ALLOWED_EMAILS")
 	if projectID == "" || allowedEmails == "" {

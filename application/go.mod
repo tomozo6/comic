@@ -1,10 +1,11 @@
 module github.com/tomozo6/manga/application
 
-go 1.23.0
+go 1.26.4
 
 require (
 	cloud.google.com/go/storage v1.49.0
 	firebase.google.com/go/v4 v4.15.2
+	github.com/joho/godotenv v1.5.1
 	google.golang.org/api v0.215.0
 	gopkg.in/yaml.v3 v3.0.1
 	modernc.org/sqlite v1.34.5
