@@ -27,7 +27,7 @@ gs://tomozo-manga-images/
 manga/{manga_id}/{volume_id}/{page:03d}.{page_extension}
 ```
 
-例: `manga/demo-manga/volume-1/001.webp`
+例: `manga/historie/001/001.jpeg`
 
 `manga_id` と `volume_id` は URL とオブジェクトキーに使う不変の識別子である。
 表示用の巻番号（`number`）を変更しても、GCS 上のパスは変更しない。
@@ -48,8 +48,7 @@ manga/{manga_id}/{volume_id}/{page:03d}.{page_extension}
 ローカルの画像ディレクトリを投入する場合の例は次のとおり。
 
 ```sh
-gcloud storage rsync --recursive ./images/demo-manga gs://tomozo-manga-images/manga/demo-manga
-gcloud storage ls gs://tomozo-manga-images/manga/demo-manga/volume-1/
+gcloud storage ls gs://tomozo-manga-images/manga/historie/001/
 ```
 
 初回投入や差し替えでは、`gcloud storage ls` でキー、連番、拡張子がカタログと一致する
@@ -68,18 +67,14 @@ terraform apply -var='local_media_signer_member=user:your-account@example.com'
 ```
 
 サービスアカウント秘密鍵は作成しない。ローカル端末では ADC を設定してから、GCS 署名 URL
-発行器を有効にしてアプリケーションを起動する。
+署名 URL を発行してアプリケーションを起動する。
 
 ```sh
 gcloud auth application-default login
 gcloud auth application-default set-quota-project tomozo6
 cd application
 set -a; source .env; set +a
-MEDIA_URL_ISSUER=gcs \
-GCS_MEDIA_BUCKET=tomozo-manga-images \
-GCS_SIGNER_SERVICE_ACCOUNT=manga-media-signer@tomozo6.iam.gserviceaccount.com \
 go run .
 ```
 
-`MEDIA_URL_ISSUER` を省略するか `local` にすると、ダミー画像を返すローカル配信 URL を使う。
 GCS 署名 URL は 1 時間有効であり、URL 自体をログや文書に記録してはならない。

@@ -17,10 +17,10 @@ func TestBuildCreatesCatalogFromYAML(t *testing.T) {
 	}
 	defer db.Close()
 	var title string
-	if err := db.QueryRow(`SELECT title FROM volumes WHERE manga_id = ? AND id = ?`, "demo-manga", "volume-1").Scan(&title); err != nil {
+	if err := db.QueryRow(`SELECT title FROM volumes WHERE manga_id = ? AND id = ?`, "historie", "001").Scan(&title); err != nil {
 		t.Fatalf("query volume: %v", err)
 	}
-	if title != "青い本のひみつ" {
-		t.Errorf("title = %q, want %q", title, "青い本のひみつ")
+	if title != "ヒストリエ(1)" {
+		t.Errorf("title = %q, want %q", title, "ヒストリエ(1)")
 	}
 }

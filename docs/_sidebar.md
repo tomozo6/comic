@@ -16,7 +16,7 @@
   - [開発ドキュメントの運用](operations/documentation.md)
 
 - 設計記録
-  - [ADR 0001: ローカル画像配信](adr/0001-local-media-url.md)
+  - [ADR 0001: ローカル画像配信（廃止）](adr/0001-local-media-url.md)
   - [ADR 0002: メール許可リスト](adr/0002-email-allowlist-authorization.md)
   - [ADR 0003: モバイルリーダー](adr/0003-mobile-vertical-reader.md)
   - [ADR 0004: 巻一覧](adr/0004-volume-list.md)
@@ -28,4 +28,5 @@
   - [ADR 0010: 非公開GCS漫画画像](adr/0010-private-gcs-manga-images.md)
   - [ADR 0011: ローカルGCS署名付きURL](adr/0011-local-gcs-signed-url.md)
   - [ADR 0012: リーダー画像の遅延読込](adr/0012-lazy-reader-image-loading.md)
+  - [ADR 0013: GCSのみの画像ソース](adr/0013-gcs-only-image-source.md)
   - [用語集](glossary.md)

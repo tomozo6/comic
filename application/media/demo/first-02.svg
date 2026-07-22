@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 1080" role="img" aria-label="本から星が飛び出す">
-  <rect width="720" height="1080" fill="#fffdf8"/><rect x="34" y="34" width="652" height="1012" rx="10" fill="#e2def4" stroke="#202020" stroke-width="8"/>
-  <rect x="62" y="62" width="596" height="580" fill="#222c55" stroke="#202020" stroke-width="7"/><g fill="#fff"><circle cx="130" cy="150" r="7"/><circle cx="257" cy="240" r="5"/><circle cx="555" cy="170" r="8"/><circle cx="480" cy="410" r="5"/></g>
-  <path d="M360 128l22 60 61 2-48 38 16 61-51-34-51 34 16-61-48-38 61-2z" fill="#ffd958" stroke="#202020" stroke-width="7"/>
-  <circle cx="360" cy="475" r="90" fill="#f2a875" stroke="#202020" stroke-width="7"/><path d="M270 462 Q360 328 451 462" fill="#353244" stroke="#202020" stroke-width="7"/><circle cx="330" cy="492" r="10"/><circle cx="392" cy="492" r="10"/><path d="M328 545 Q360 515 394 545" fill="none" stroke="#202020" stroke-width="8" stroke-linecap="round"/>
-  <path d="M88 705h544v210H88z" fill="#fff" stroke="#202020" stroke-width="7"/><text x="120" y="790" font-family="sans-serif" font-size="47" font-weight="bold" fill="#202020">わっ！</text><text x="120" y="855" font-family="sans-serif" font-size="35" fill="#202020">星が飛び出してきた！</text><text x="610" y="1000" text-anchor="end" font-family="sans-serif" font-size="28" fill="#202020">2</text>
-</svg>

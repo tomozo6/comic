@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
 	"testing"
-	"time"
 
 	"github.com/tomozo6/manga/application/internal/catalog"
 )
@@ -18,19 +18,13 @@ func (testVerifier) Verify(_ context.Context, _ string) (identity, error) {
 	return identity{UID: "test-user", Email: "family@example.com"}, nil
 }
 
-type blockingIssuer struct {
-	started chan struct{}
-	release chan struct{}
-}
-
-func (s blockingIssuer) Issue(ctx context.Context, key string, _ time.Time) (string, error) {
-	s.started <- struct{}{}
-	select {
-	case <-s.release:
-		return "https://example.test/" + key, nil
-	case <-ctx.Done():
-		return "", ctx.Err()
+func newTestApp(t *testing.T, db *sql.DB) app {
+	t.Helper()
+	signer, err := newGCSMediaSigner(context.Background())
+	if err != nil {
+		t.Fatalf("newGCSMediaSigner() error = %v", err)
 	}
+	return app{verifier: testVerifier{}, allowed: map[string]struct{}{"family@example.com": {}}, gcsMediaSigner: signer, db: db}
 }
 
 func TestMangaListUsesFrontendJSONKeys(t *testing.T) {
@@ -43,13 +37,7 @@ func TestMangaListUsesFrontendJSONKeys(t *testing.T) {
 		t.Fatalf("open catalog: %v", err)
 	}
 	defer db.Close()
-	a := app{
-		verifier:         testVerifier{},
-		allowed:          map[string]struct{}{"family@example.com": {}},
-		localMediaSigner: newLocalMediaSigner([]byte("test-secret"), time.Minute),
-		mediaURLIssuer:   newLocalMediaSigner([]byte("test-secret"), time.Minute),
-		db:               db,
-	}
+	a := newTestApp(t, db)
 	req := httptest.NewRequest(http.MethodGet, "/api/manga", nil)
 	req.Header.Set("Authorization", "Bearer test-token")
 	res := httptest.NewRecorder()
@@ -65,8 +53,8 @@ func TestMangaListUsesFrontendJSONKeys(t *testing.T) {
 	if err := json.NewDecoder(res.Body).Decode(&works); err != nil {
 		t.Fatalf("decode response: %v", err)
 	}
-	if len(works) == 0 || works[0].ID != "demo-manga" {
-		t.Fatalf("works = %#v, want first id demo-manga", works)
+	if len(works) != 1 || works[0].ID != "historie" {
+		t.Fatalf("works = %#v, want historie", works)
 	}
 }
 
@@ -80,11 +68,10 @@ func TestVolumePagesAreGeneratedFromCatalogMetadata(t *testing.T) {
 		t.Fatalf("open catalog: %v", err)
 	}
 	defer db.Close()
-	localSigner := newLocalMediaSigner([]byte("test-secret"), time.Minute)
-	a := app{verifier: testVerifier{}, allowed: map[string]struct{}{"family@example.com": {}}, localMediaSigner: localSigner, mediaURLIssuer: localSigner, db: db}
-	req := httptest.NewRequest(http.MethodGet, "/api/manga/demo-manga/volumes/volume-1", nil)
-	req.SetPathValue("mangaID", "demo-manga")
-	req.SetPathValue("volumeID", "volume-1")
+	a := newTestApp(t, db)
+	req := httptest.NewRequest(http.MethodGet, "/api/manga/historie/volumes/001", nil)
+	req.SetPathValue("mangaID", "historie")
+	req.SetPathValue("volumeID", "001")
 	req.Header.Set("Authorization", "Bearer test-token")
 	res := httptest.NewRecorder()
 
@@ -103,8 +90,8 @@ func TestVolumePagesAreGeneratedFromCatalogMetadata(t *testing.T) {
 	if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
 		t.Fatalf("decode response: %v", err)
 	}
-	if body.PageCount != 3 || len(body.Pages) != 3 || body.Pages[2].Number != 3 {
-		t.Fatalf("pages = %#v, want three ordered pages", body.Pages)
+	if body.PageCount != 215 || len(body.Pages) != pageURLBatchSize || body.Pages[0].Number != 1 || body.Pages[7].Number != 8 {
+		t.Fatalf("pages = %#v, want first batch of historie", body.Pages)
 	}
 }
 
@@ -118,8 +105,7 @@ func TestVolumePageBatchesUseEightPagesAndKeepOrder(t *testing.T) {
 		t.Fatalf("open catalog: %v", err)
 	}
 	defer db.Close()
-	localSigner := newLocalMediaSigner([]byte("test-secret"), time.Minute)
-	a := app{verifier: testVerifier{}, allowed: map[string]struct{}{"family@example.com": {}}, localMediaSigner: localSigner, mediaURLIssuer: localSigner, db: db}
+	a := newTestApp(t, db)
 
 	initial := httptest.NewRequest(http.MethodGet, "/api/manga/historie/volumes/001", nil)
 	initial.SetPathValue("mangaID", "historie")
@@ -176,45 +162,5 @@ func TestVolumePageBatchesUseEightPagesAndKeepOrder(t *testing.T) {
 				t.Fatalf("pages = %#v, want %d through %d", body.Pages, test.wantFirst, test.wantLast)
 			}
 		})
-	}
-}
-
-func TestInitialVolumeBatchSignsEightPagesInParallel(t *testing.T) {
-	dbPath := filepath.Join(t.TempDir(), "catalog.db")
-	if err := catalog.Build(context.Background(), "catalog/mangas", dbPath); err != nil {
-		t.Fatalf("build catalog: %v", err)
-	}
-	db, err := catalog.OpenReadonly(dbPath)
-	if err != nil {
-		t.Fatalf("open catalog: %v", err)
-	}
-	defer db.Close()
-	issuer := blockingIssuer{started: make(chan struct{}, pageURLBatchSize), release: make(chan struct{})}
-	a := app{verifier: testVerifier{}, allowed: map[string]struct{}{"family@example.com": {}}, mediaURLIssuer: issuer, db: db}
-	req := httptest.NewRequest(http.MethodGet, "/api/manga/historie/volumes/001", nil)
-	req.SetPathValue("mangaID", "historie")
-	req.SetPathValue("volumeID", "001")
-	req.Header.Set("Authorization", "Bearer test-token")
-	response := httptest.NewRecorder()
-	done := make(chan struct{})
-	go func() {
-		a.handleVolume(response, req)
-		close(done)
-	}()
-	for number := 0; number < pageURLBatchSize; number++ {
-		select {
-		case <-issuer.started:
-		case <-time.After(time.Second):
-			t.Fatalf("only %d signing requests started; want %d in parallel", number, pageURLBatchSize)
-		}
-	}
-	close(issuer.release)
-	select {
-	case <-done:
-	case <-time.After(time.Second):
-		t.Fatal("volume handler did not complete")
-	}
-	if response.Code != http.StatusOK {
-		t.Fatalf("status = %d, want %d", response.Code, http.StatusOK)
 	}
 }
