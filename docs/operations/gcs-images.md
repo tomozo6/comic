@@ -57,3 +57,29 @@ gcloud storage ls gs://tomozo-manga-images/manga/demo-manga/volume-1/
 上書きした場合も旧世代は保持される。
 
 実際の漫画画像をこのリポジトリや公開される Docsify 文書に追加してはならない。
+
+## ローカルで実画像を読む
+
+初回だけ、Terraform にローカル開発者を署名権限の対象として渡して適用する。
+
+```sh
+cd terraform
+terraform apply -var='local_media_signer_member=user:your-account@example.com'
+```
+
+サービスアカウント秘密鍵は作成しない。ローカル端末では ADC を設定してから、GCS 署名 URL
+発行器を有効にしてアプリケーションを起動する。
+
+```sh
+gcloud auth application-default login
+gcloud auth application-default set-quota-project tomozo6
+cd application
+set -a; source .env; set +a
+MEDIA_URL_ISSUER=gcs \
+GCS_MEDIA_BUCKET=tomozo-manga-images \
+GCS_SIGNER_SERVICE_ACCOUNT=manga-media-signer@tomozo6.iam.gserviceaccount.com \
+go run .
+```
+
+`MEDIA_URL_ISSUER` を省略するか `local` にすると、ダミー画像を返すローカル配信 URL を使う。
+GCS 署名 URL は 1 時間有効であり、URL 自体をログや文書に記録してはならない。

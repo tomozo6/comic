@@ -26,4 +26,6 @@
   - [ADR 0008: フロントエンド資産の整理](adr/0008-static-frontend-organization.md)
   - [ADR 0009: Docsifyによる開発ドキュメント](adr/0009-docsify-development-documentation.md)
   - [ADR 0010: 非公開GCS漫画画像](adr/0010-private-gcs-manga-images.md)
+  - [ADR 0011: ローカルGCS署名付きURL](adr/0011-local-gcs-signed-url.md)
+  - [ADR 0012: リーダー画像の遅延読込](adr/0012-lazy-reader-image-loading.md)
   - [用語集](glossary.md)

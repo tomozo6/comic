@@ -16,3 +16,8 @@ output "manga_images_bucket_name" {
   description = "Private GCS bucket that stores production manga image objects."
   value       = google_storage_bucket.manga_images.name
 }
+
+output "manga_media_signer_service_account" {
+  description = "Service account used to sign temporary GCS image URLs."
+  value       = google_service_account.manga_media_signer.email
+}

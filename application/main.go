@@ -18,11 +18,14 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
+	"cloud.google.com/go/storage"
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/auth"
 	"github.com/tomozo6/manga/application/internal/catalog"
+	"google.golang.org/api/iamcredentials/v1"
 )
 
 //go:embed media/*
@@ -57,6 +60,12 @@ type localMediaSigner struct {
 	secret []byte
 	ttl    time.Duration
 }
+
+type mediaURLIssuer interface {
+	Issue(context.Context, string, time.Time) (string, error)
+}
+
+const pageURLBatchSize = 8
 
 func newLocalMediaSigner(secret []byte, ttl time.Duration) localMediaSigner {
 	return localMediaSigner{secret: secret, ttl: ttl}
@@ -104,17 +113,84 @@ func (s localMediaSigner) Verify(token string, now time.Time) (string, error) {
 	return data.Key, nil
 }
 
+func (s localMediaSigner) Issue(_ context.Context, key string, now time.Time) (string, error) {
+	token, err := s.Sign(key, now)
+	if err != nil {
+		return "", err
+	}
+	return "/local-media/" + token, nil
+}
+
+type gcsMediaSigner struct {
+	bucket         string
+	googleAccessID string
+	ttl            time.Duration
+	signBytes      func(context.Context, []byte) ([]byte, error)
+}
+
+func newGCSMediaSigner(ctx context.Context, bucket, googleAccessID string, ttl time.Duration) (gcsMediaSigner, error) {
+	service, err := iamcredentials.NewService(ctx)
+	if err != nil {
+		return gcsMediaSigner{}, fmt.Errorf("create IAM Credentials client: %w", err)
+	}
+	return gcsMediaSigner{
+		bucket:         bucket,
+		googleAccessID: googleAccessID,
+		ttl:            ttl,
+		signBytes: func(ctx context.Context, payload []byte) ([]byte, error) {
+			response, err := service.Projects.ServiceAccounts.SignBlob(
+				"projects/-/serviceAccounts/"+googleAccessID,
+				&iamcredentials.SignBlobRequest{Payload: base64.StdEncoding.EncodeToString(payload)},
+			).Context(ctx).Do()
+			if err != nil {
+				return nil, err
+			}
+			return base64.StdEncoding.DecodeString(response.SignedBlob)
+		},
+	}, nil
+}
+
+func (s gcsMediaSigner) Issue(ctx context.Context, key string, now time.Time) (string, error) {
+	url, err := storage.SignedURL(s.bucket, key, &storage.SignedURLOptions{
+		Scheme:         storage.SigningSchemeV4,
+		Method:         http.MethodGet,
+		Expires:        now.Add(s.ttl),
+		GoogleAccessID: s.googleAccessID,
+		SignBytes: func(payload []byte) ([]byte, error) {
+			return s.signBytes(ctx, payload)
+		},
+	})
+	if err != nil {
+		return "", fmt.Errorf("sign GCS URL for %q: %w", key, err)
+	}
+	return url, nil
+}
+
 type manga struct {
 	ID     string
 	Title  string
 	Author string
 }
 
+type volume struct {
+	ID            string
+	Number        int
+	Title         string
+	PageCount     int
+	PageExtension string
+}
+
+type pageResponse struct {
+	Number   int    `json:"number"`
+	ImageURL string `json:"imageUrl"`
+}
+
 type app struct {
-	verifier tokenVerifier
-	allowed  map[string]struct{}
-	signer   localMediaSigner
-	db       *sql.DB
+	verifier         tokenVerifier
+	allowed          map[string]struct{}
+	localMediaSigner localMediaSigner
+	mediaURLIssuer   mediaURLIssuer
+	db               *sql.DB
 }
 
 func (a app) authenticate(w http.ResponseWriter, r *http.Request) (identity, bool) {
@@ -218,41 +294,110 @@ func (a app) handleVolume(w http.ResponseWriter, r *http.Request) {
 	if _, ok := a.authenticate(w, r); !ok {
 		return
 	}
-	var item manga
-	var volumeID, volumeTitle, pageExtension string
-	var volumeNumber, pageCount int
-	err := a.db.QueryRowContext(r.Context(), `
-SELECT m.id, m.title, m.author_name, v.id, v.number, v.title, v.page_count, v.page_extension
-FROM mangas m JOIN volumes v ON v.manga_id = m.id
-WHERE m.id = ? AND v.id = ?`, r.PathValue("mangaID"), r.PathValue("volumeID")).Scan(
-		&item.ID, &item.Title, &item.Author, &volumeID, &volumeNumber, &volumeTitle, &pageCount, &pageExtension)
-	if errors.Is(err, sql.ErrNoRows) {
-		writeJSON(w, http.StatusNotFound, map[string]string{"error": "volume not found"})
-		return
-	}
+	item, selectedVolume, found, err := a.findVolume(r.Context(), r.PathValue("mangaID"), r.PathValue("volumeID"))
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "could not read catalog"})
 		return
 	}
-	type pageResponse struct {
-		Number   int    `json:"number"`
-		ImageURL string `json:"imageUrl"`
+	if !found {
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": "volume not found"})
+		return
 	}
-	pages := make([]pageResponse, 0, pageCount)
-	for number := 1; number <= pageCount; number++ {
-		key := fmt.Sprintf("manga/%s/%s/%03d.%s", item.ID, volumeID, number, pageExtension)
-		token, err := a.signer.Sign(key, time.Now())
-		if err != nil {
-			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "could not issue image URL"})
-			return
-		}
-		pages = append(pages, pageResponse{Number: number, ImageURL: "/local-media/" + token})
+	pages, err := a.issuePageBatch(r.Context(), item, selectedVolume, 1)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "could not issue image URL"})
+		return
 	}
-	writeJSON(w, http.StatusOK, map[string]any{"mangaTitle": item.Title, "volumeNumber": volumeNumber, "volumeTitle": volumeTitle, "pages": pages})
+	writeJSON(w, http.StatusOK, map[string]any{
+		"mangaTitle":   item.Title,
+		"volumeNumber": selectedVolume.Number,
+		"volumeTitle":  selectedVolume.Title,
+		"pageCount":    selectedVolume.PageCount,
+		"pages":        pages,
+	})
+}
+
+func (a app) handleVolumePages(w http.ResponseWriter, r *http.Request) {
+	if _, ok := a.authenticate(w, r); !ok {
+		return
+	}
+	start, err := strconv.Atoi(r.URL.Query().Get("start"))
+	if err != nil || start < 1 || (start-1)%pageURLBatchSize != 0 {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "start must be a positive page URL batch boundary"})
+		return
+	}
+	item, selectedVolume, found, err := a.findVolume(r.Context(), r.PathValue("mangaID"), r.PathValue("volumeID"))
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "could not read catalog"})
+		return
+	}
+	if !found {
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": "volume not found"})
+		return
+	}
+	if start > selectedVolume.PageCount {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "start is beyond the last page"})
+		return
+	}
+	pages, err := a.issuePageBatch(r.Context(), item, selectedVolume, start)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "could not issue image URL"})
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"pages": pages})
+}
+
+func (a app) findVolume(ctx context.Context, mangaID, volumeID string) (manga, volume, bool, error) {
+	var item manga
+	var selectedVolume volume
+	err := a.db.QueryRowContext(ctx, `
+SELECT m.id, m.title, m.author_name, v.id, v.number, v.title, v.page_count, v.page_extension
+FROM mangas m JOIN volumes v ON v.manga_id = m.id
+WHERE m.id = ? AND v.id = ?`, mangaID, volumeID).Scan(
+		&item.ID, &item.Title, &item.Author, &selectedVolume.ID, &selectedVolume.Number, &selectedVolume.Title, &selectedVolume.PageCount, &selectedVolume.PageExtension)
+	if errors.Is(err, sql.ErrNoRows) {
+		return manga{}, volume{}, false, nil
+	}
+	if err != nil {
+		return manga{}, volume{}, false, err
+	}
+	return item, selectedVolume, true, nil
+}
+
+func (a app) issuePageBatch(ctx context.Context, item manga, selectedVolume volume, start int) ([]pageResponse, error) {
+	end := min(start+pageURLBatchSize-1, selectedVolume.PageCount)
+	pages := make([]pageResponse, end-start+1)
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	var wg sync.WaitGroup
+	var firstErr error
+	var errOnce sync.Once
+	for number := start; number <= end; number++ {
+		index := number - start
+		wg.Add(1)
+		go func(number, index int) {
+			defer wg.Done()
+			key := fmt.Sprintf("manga/%s/%s/%03d.%s", item.ID, selectedVolume.ID, number, selectedVolume.PageExtension)
+			imageURL, err := a.mediaURLIssuer.Issue(ctx, key, time.Now())
+			if err != nil {
+				errOnce.Do(func() {
+					firstErr = err
+					cancel()
+				})
+				return
+			}
+			pages[index] = pageResponse{Number: number, ImageURL: imageURL}
+		}(number, index)
+	}
+	wg.Wait()
+	if firstErr != nil {
+		return nil, firstErr
+	}
+	return pages, nil
 }
 
 func (a app) handleLocalMedia(w http.ResponseWriter, r *http.Request) {
-	key, err := a.signer.Verify(r.PathValue("token"), time.Now())
+	key, err := a.localMediaSigner.Verify(r.PathValue("token"), time.Now())
 	if err != nil {
 		http.NotFound(w, r)
 		return
@@ -370,7 +515,24 @@ func main() {
 		log.Fatalf("initialize Firebase Auth client: %v", err)
 	}
 
-	a := app{verifier: firebaseVerifier{client: client}, allowed: allowed, signer: newLocalMediaSigner([]byte(secret), 10*time.Minute), db: catalogDB}
+	localSigner := newLocalMediaSigner([]byte(secret), 10*time.Minute)
+	issuer := mediaURLIssuer(localSigner)
+	if mode := os.Getenv("MEDIA_URL_ISSUER"); mode == "gcs" {
+		bucket := os.Getenv("GCS_MEDIA_BUCKET")
+		googleAccessID := os.Getenv("GCS_SIGNER_SERVICE_ACCOUNT")
+		if bucket == "" || googleAccessID == "" {
+			log.Fatal("GCS_MEDIA_BUCKET and GCS_SIGNER_SERVICE_ACCOUNT must be set when MEDIA_URL_ISSUER=gcs")
+		}
+		gcsSigner, err := newGCSMediaSigner(ctx, bucket, googleAccessID, time.Hour)
+		if err != nil {
+			log.Fatalf("initialize GCS media signer: %v", err)
+		}
+		issuer = gcsSigner
+	} else if mode != "" && mode != "local" {
+		log.Fatalf("MEDIA_URL_ISSUER must be local or gcs, got %q", mode)
+	}
+
+	a := app{verifier: firebaseVerifier{client: client}, allowed: allowed, localMediaSigner: localSigner, mediaURLIssuer: issuer, db: catalogDB}
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8000"
@@ -388,6 +550,7 @@ func newRouter(a app) *http.ServeMux {
 	mux.HandleFunc("GET /api/manga", a.handleManga)
 	mux.HandleFunc("GET /api/manga/{mangaID}", a.handleMangaDetail)
 	mux.HandleFunc("GET /api/manga/{mangaID}/volumes/{volumeID}", a.handleVolume)
+	mux.HandleFunc("GET /api/manga/{mangaID}/volumes/{volumeID}/pages", a.handleVolumePages)
 	mux.HandleFunc("GET /local-media/{token}", a.handleLocalMedia)
 	mux.HandleFunc("GET /", servePage("index.html"))
 	mux.HandleFunc("GET /library", servePage("library.html"))

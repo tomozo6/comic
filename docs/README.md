@@ -20,6 +20,8 @@
 - [ADR 0008](adr/0008-static-frontend-organization.md) — 実行用画面と設計資料の分離
 - [ADR 0009](adr/0009-docsify-development-documentation.md) — Docsifyによる設計書の公開方針
 - [ADR 0010](adr/0010-private-gcs-manga-images.md) — 実際の漫画画像の保管方針
+- [ADR 0011](adr/0011-local-gcs-signed-url.md) — ローカルで実画像を安全に読む署名 URL の方針
+- [ADR 0012](adr/0012-lazy-reader-image-loading.md) — リーダーの画像通信量を抑える読込方針
 - [用語集](glossary.md) — 設計で使う用語
 
 ## 文書の扱い

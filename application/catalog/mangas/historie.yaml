@@ -1,0 +1,10 @@
+id: historie
+title: ヒストリエ
+author_name: 岩明均
+volumes:
+  - id: "001"
+    number: 1
+    title: ヒストリエ(1)
+    cover_object_key: manga/historie/001/cover.jpeg
+    page_count: 215
+    page_extension: jpeg

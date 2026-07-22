@@ -2,6 +2,8 @@ resource "google_project_service" "main" {
   for_each = toset([
     "firebase.googleapis.com",
     "identitytoolkit.googleapis.com",
+    "iam.googleapis.com",
+    "iamcredentials.googleapis.com",
   ])
 
   project            = local.project.id
